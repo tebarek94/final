@@ -1,0 +1,597 @@
+{
+  "info": {
+    "name": "NutriPlan Pro API",
+    "description": "API collection for NutriPlan Pro - AI-Powered Personalized Meal Planning Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "recipeId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "mealPlanId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "User Registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"age\": 30,\n  \"gender\": \"male\",\n  \"weight\": 75.0,\n  \"height\": 180.0,\n  \"activity_level\": \"moderately_active\",\n  \"fitness_goal\": \"maintenance\",\n  \"dietary_preferences\": [\"balanced\", \"high_protein\"],\n  \"allergies\": [\"nuts\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('authToken', response.token);",
+                  "    pm.collectionVariables.set('userId', response.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "User Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('authToken', response.token);",
+                  "    pm.collectionVariables.set('userId', response.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"weight\": 78.0,\n  \"fitness_goal\": \"weight_loss\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "change-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recipes",
+      "item": [
+        {
+          "name": "Get All Recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/recipes?limit=10&offset=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recipes"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/recipes/search?q=chicken&limit=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recipes", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "chicken"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Recipe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Grilled Chicken Salad\",\n  \"description\": \"A healthy and delicious grilled chicken salad\",\n  \"ingredients\": [\n    {\n      \"name\": \"Chicken breast\",\n      \"amount\": 200,\n      \"unit\": \"g\"\n    },\n    {\n      \"name\": \"Mixed greens\",\n      \"amount\": 100,\n      \"unit\": \"g\"\n    }\n  ],\n  \"instructions\": [\n    \"Season chicken with salt and pepper\",\n    \"Grill chicken for 6-8 minutes per side\",\n    \"Mix greens and serve with grilled chicken\"\n  ],\n  \"cooking_time\": 20,\n  \"servings\": 2,\n  \"difficulty\": \"easy\",\n  \"cuisine_type\": \"Mediterranean\",\n  \"tags\": [\"healthy\", \"protein\", \"salad\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/recipes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recipes"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('recipeId', response.recipe.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Recipe by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/recipes/{{recipeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recipes", "{{recipeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Recipe",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Grilled Chicken Salad\",\n  \"cooking_time\": 25\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/recipes/{{recipeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recipes", "{{recipeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get User Recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/recipes/user/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recipes", "user", "me"]
+            }
+          }
+        },
+        {
+          "name": "Add Nutrition Info",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"calories\": 350,\n  \"protein\": 35,\n  \"carbohydrates\": 15,\n  \"fat\": 18,\n  \"fiber\": 8\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/recipes/{{recipeId}}/nutrition",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recipes", "{{recipeId}}", "nutrition"]
+            }
+          }
+        },
+        {
+          "name": "Get Recipe Nutrition",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/recipes/{{recipeId}}/nutrition",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "recipes", "{{recipeId}}", "nutrition"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Meal Plans",
+      "item": [
+        {
+          "name": "Create Meal Plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Weekly Healthy Plan\",\n  \"start_date\": \"2024-01-01\",\n  \"end_date\": \"2024-01-07\",\n  \"meals\": [\n    {\n      \"meal_type\": \"breakfast\",\n      \"day_of_week\": \"monday\",\n      \"date\": \"2024-01-01\",\n      \"recipe_id\": {{recipeId}}\n    },\n    {\n      \"meal_type\": \"lunch\",\n      \"day_of_week\": \"monday\",\n      \"date\": \"2024-01-01\",\n      \"recipe_id\": {{recipeId}}\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/meal-plans",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "meal-plans"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('mealPlanId', response.mealPlan.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get User Meal Plans",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/meal-plans/user",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "meal-plans", "user"]
+            }
+          }
+        },
+        {
+          "name": "Get Meal Plan by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/meal-plans/{{mealPlanId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "meal-plans", "{{mealPlanId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Meal Plan Items",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/meal-plans/{{mealPlanId}}/items",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "meal-plans", "{{mealPlanId}}", "items"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Services",
+      "item": [
+        {
+          "name": "Generate Personalized Meal",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mealType\": \"breakfast\",\n  \"preferences\": [\"high_protein\", \"low_carb\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/generate-meal",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "generate-meal"]
+            }
+          }
+        },
+        {
+          "name": "Analyze Meal Nutrition",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mealData\": {\n    \"name\": \"Grilled Chicken Salad\",\n    \"ingredients\": [\n      {\n        \"name\": \"Chicken breast\",\n        \"amount\": 200,\n        \"unit\": \"g\"\n      }\n    ],\n    \"nutrition\": {\n      \"calories\": 350,\n      \"protein\": 35\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/analyze-nutrition",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "analyze-nutrition"]
+            }
+          }
+        },
+        {
+          "name": "Get AI Analysis History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/history?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "history"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin (Admin Role Required)",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users?limit=10&offset=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update User Role",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/{{userId}}/role",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users", "{{userId}}", "role"]
+            }
+          }
+        },
+        {
+          "name": "Get Pending Recipes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/recipes/pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "recipes", "pending"]
+            }
+          }
+        },
+        {
+          "name": "Approve Recipe",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/recipes/{{recipeId}}/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "recipes", "{{recipeId}}", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Get System Analytics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/analytics/system",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "analytics", "system"]
+            }
+          }
+        },
+        {
+          "name": "Get User Analytics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/analytics/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "analytics", "users", "{{userId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+
